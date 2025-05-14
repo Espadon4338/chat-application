@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 
 import User from "../models/user.model.js";
 import generateTokenAndSetCookie from "../util/generateToken.js";
+import { io } from '../socket/socket.js';
 
 export const signup = async (req, res) => {
     try {
@@ -73,8 +74,22 @@ export const login = async (req, res) => {
 }
 
 export const logout = async (req, res) => {
+    const { _id } = req.body;
+    
     try {
         res.cookie("jwt", "", { maxAge: 0 });
+
+        const updatedUser = await User.findByIdAndUpdate(_id, {
+            $set: {
+                last_seen: new Date()
+            }},
+            { new: true }
+        );
+
+        io.emit("userLastSeen", {
+            userId: _id,
+            lastSeen: updatedUser.last_seen
+        });
 
         res.status(200).json({ message: "Logged out successfully" });
     } catch (error) {
