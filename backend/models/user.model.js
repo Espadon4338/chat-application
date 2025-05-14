@@ -22,18 +22,6 @@ const userSchema = new mongoose.Schema({
     last_seen: {
         type: Date,
         default: Date.now
-    },
-    sessions: {
-        type: Array,
-        of: mongoose.Schema.Types.ObjectId,
-        default: [],
-        ref: "Session"
-    },
-    activities: {
-        type: Array,
-        of: mongoose.Schema.Types.ObjectId,
-        default: [],
-        ref: "Activity"
     }
 }, { timestamps: true } );
 
