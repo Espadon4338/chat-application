@@ -1,5 +1,6 @@
 import Message from '../models/message.model.js';
 import Chat from '../models/chat.model.js';
+import { io, getRecieverSocketId } from '../socket/socket.js';
 
 export const sendMessage = async (req, res) => {
     try {
@@ -29,6 +30,15 @@ export const sendMessage = async (req, res) => {
         }
 
         await Promise.all([chat.save(), newMessage.save()]);
+
+                const recieverSocketId = getRecieverSocketId(recieverId);
+        if(recieverSocketId) {
+            io.to(recieverSocketId).emit("newMessage", newMessage);
+        }
+        const senderSocketId = getRecieverSocketId(senderId.toString());
+        if (senderSocketId && senderSocketId !== req.socket?.id) {
+            io.to(senderSocketId).emit("newMessage", newMessage);
+        }
 
         res.status(201).json(newMessage);
     } catch (error) {
@@ -81,6 +91,20 @@ export const updateMessage = async (req, res) => {
         messageToUpdate.status = "modified";
 
         await messageToUpdate.save();
+
+        const senderId = messageToUpdate.sender_id.toString();
+        const recieverId = messageToUpdate.reciever_id.toString();
+
+        const senderSocketId = getRecieverSocketId(senderId);
+        const recieverSocketId = getRecieverSocketId(recieverId);
+
+        if (senderSocketId) {
+            io.to(senderSocketId).emit("messageUpdated", messageToUpdate);
+        }
+
+        if (recieverSocketId && recieverSocketId !== senderSocketId) {
+            io.to(recieverSocketId).emit("messageUpdated", messageToUpdate);
+        }
 
         res.status(200).json(messageToUpdate);
     } catch (error) {
