@@ -1,5 +1,5 @@
 import React from 'react';
-import Sidebar from '../../components/sidebar/Sidebar';
+import Sidebar from '../../components/sidebar/SideBar';
 import ChatWindow from '../../components/chatWindow/ChatWindow';
 import './home.scss';
 import useSocketContext from '../../hooks/useSocketContext'; // Добавляем при необходимости
