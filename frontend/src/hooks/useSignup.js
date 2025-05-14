@@ -50,8 +50,13 @@ const validateInputs = ({username, display_name, password, confirm_password}) =>
         return false;
     }
 
-    if(password.lebgth < 8) {
+    if(password.length < 8) {
         toast.error("Password must be at least 8 characters long");
+        return false;
+    }
+
+    if(display_name.length > 20) {
+        toast.error("The display name cannot be greater than 20 charatcers long");
         return false;
     }
 

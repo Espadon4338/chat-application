@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { BsSend } from "react-icons/bs";
 import useSendMessage from '../../hooks/useSendMessage';
+import toast from 'react-hot-toast';
 
 const MessageInput = () => {
   const [message, setMessage] = useState("");
@@ -11,6 +12,11 @@ const MessageInput = () => {
 
     if(!message)
       return;
+
+    if(message.length > 80) {
+      toast.error("The message length cannot be greater than 80 characters");
+      return;
+    }
 
     await sendMessage(message);
     setMessage("");
